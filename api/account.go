@@ -87,7 +87,7 @@ func (server *Server) listAccounts(ctx *gin.Context) {
 }
 
 type updateAccountRequest struct {
-	Balance int64 `json:"balance" binding:"required"`
+	Balance int64 `json:"balance" binding:"required,min=0"`
 }
 
 func (server *Server) updateAccount(ctx *gin.Context) {
