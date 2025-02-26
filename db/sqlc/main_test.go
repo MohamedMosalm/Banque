@@ -6,20 +6,19 @@ import (
 	"os"
 	"testing"
 
+	"github.com/MohamedMosalm/banque/util"
 	_ "github.com/lib/pq"
-)
-
-const (
-	dbDeriver = "postgres"
-	dbSource  = "postgresql://postgres:password@localhost:5432/banque?sslmode=disable"
 )
 
 var testQueries *Queries
 var testDB *sql.DB
 
 func TestMain(m *testing.M) {
-	var err error
-	testDB, err = sql.Open(dbDeriver, dbSource)
+	config, err := util.LoadConfig("../..")
+	if err != nil {
+		log.Fatalf("cannot load config: %v", err)
+	}
+	testDB, err = sql.Open(config.DBDeriver, config.DBSource)
 	if err != nil {
 		log.Fatal("cannot connect to the DB: ", err)
 	}
