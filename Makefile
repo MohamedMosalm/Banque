@@ -1,3 +1,5 @@
+DB_URL=postgresql://postgres:password@localhost:5432/banque?sslmode=disable
+
 postgres:
 	docker run --name postgres-container -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -d postgres
 
@@ -8,10 +10,16 @@ dropdb:
 	docker exec -it postgres-container dropdb banque
 
 migrateup:
-	migrate -path db/migration -database "postgresql://postgres:password@localhost:5432/banque?sslmode=disable" -verbose up
+	migrate -path db/migration -database "$(DB_URL)" -verbose up
 
 migratedown:
-	migrate -path db/migration -database "postgresql://postgres:password@localhost:5432/banque?sslmode=disable" -verbose down
+	migrate -path db/migration -database "$(DB_URL)" -verbose down
+
+db_docs:
+	npx dbdocs build doc/db.dbml
+
+db_schema:
+	npx dbml2sql --postgres -o doc/schema.sql doc/db.dbml
 
 sqlc:
 	sqlc generate
@@ -25,4 +33,4 @@ server:
 mock:
 	mockgen -destination db/mock/store.go -package mockdb github.com/MohamedMosalm/banque/db/sqlc Store
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc server mock
+.PHONY: postgres createdb dropdb migrateup migratedown db_docs db_schema sqlc server mock
